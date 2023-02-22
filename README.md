@@ -4,6 +4,10 @@
     </a>
 </p>
 
+![image](https://user-images.githubusercontent.com/25007571/220516400-79672e00-19a5-459e-b96c-c3a4653bb363.png)
+![1677037489685](https://user-images.githubusercontent.com/25007571/220516426-8a96d7d9-acf1-40f1-a129-e9287a10db7c.png)
+
+
 WebPty makes it possible to run your server terminal from your browser. It is a zero config fat binary that "just work" from any linux server with any program
 
 I've build WebPty so you can't missuse it in a way that could do something bad meaning:
