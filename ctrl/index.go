@@ -1,8 +1,9 @@
 package ctrl
 
 import (
-	. "github.com/mickael-kerjean/webpty/common"
 	"net/http"
+
+	. "github.com/mickael-kerjean/webpty/common"
 )
 
 func Main(res http.ResponseWriter, req *http.Request) {
@@ -12,6 +13,8 @@ func Main(res http.ResponseWriter, req *http.Request) {
 			return
 		} else if req.Method == "GET" {
 			HandleStatic(res, req)
+			return
+		} else if req.URL.Path == "/" {
 			return
 		}
 		ErrorPage(res, ErrNotFound, 404)

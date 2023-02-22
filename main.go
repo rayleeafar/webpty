@@ -4,15 +4,16 @@ import (
 	"crypto/tls"
 	_ "embed"
 	"fmt"
-	. "github.com/mickael-kerjean/webpty/common"
-	"github.com/mickael-kerjean/webpty/common/ssl"
-	"github.com/mickael-kerjean/webpty/ctrl"
 	"net/http"
 	"os"
 	"strconv"
+
+	. "github.com/mickael-kerjean/webpty/common"
+	"github.com/mickael-kerjean/webpty/common/ssl"
+	"github.com/mickael-kerjean/webpty/ctrl"
 )
 
-var port int = 3456
+var port int = 13456
 
 func init() {
 	if pStr := os.Getenv("PORT"); pStr != "" {
@@ -25,6 +26,7 @@ func init() {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", ctrl.Main)
+	mux.HandleFunc("/login", ctrl.HandlerLogin)
 	mux.HandleFunc("/setup", ctrl.SetupTunnel)
 	mux.HandleFunc("/tunnel.js", ctrl.RedirectTunnel)
 	mux.HandleFunc("/healthz", ctrl.HealthCheck)

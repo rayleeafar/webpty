@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+  <link rel="stylesheet" href="app/element-ui.css">
+</head>
+<body>
+  <div id="app">
+    <!-- <el-button @click="visible = true">Button</el-button> -->
+  
+  <el-dialog
+  title="Login webpty"
+  :visible.sync="visible"
+  width="30%"
+  center>
+  <el-form ref="form" :model="form" label-width="80px">
+    <el-form-item label="user:">
+      <el-input v-model="form.user"></el-input>
+    </el-form-item>
+    <el-form-item label="pass:" v-if="form.use_key == false" >
+        <el-input v-model="form.pass"></el-input>
+    </el-form-item>
+    <el-form-item label="use key:">
+        <el-switch v-model="form.use_key"></el-switch>
+    </el-form-item>
+    <el-form-item label="select key" prop="key" v-if="form.use_key">
+        <el-upload 
+            class="upload-demo" 
+            drag 
+            ref="newupload" 
+            :action="action"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :on-change="onChange" :on-success="onSuccess" :file-list="form.key_list"
+            :auto-upload="false" 
+            :data="form" 
+            >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">drag file here... or<em> click</em></div>
+        </el-upload>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button type="primary" @click="onSubmit">Login</el-button>
+      <el-button>Cancel</el-button>
+    </el-form-item>
+  </el-form>
+  </el-dialog>
+</div>
+</body>
+  <!-- import Vue before Element -->
+  <!-- <script src="https://unpkg.com/vue@2/dist/vue.js"></script> -->
+  <script src="app/vue2.js"></script>
+  <!-- import JavaScript -->
+  <!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+  <script src="app/element-ui.js"></script>
+  <!-- <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script> -->
+  <script src="app/axios.min.js"></script>
+  <script>
+    
+    new Vue({
+        el: '#app',
+        data: function() {
+            return { 
+                visible: true,
+                form: {
+                    user: '',
+                    pass: '',
+                    use_key: false,
+                    key_list:[]
+                }
+            }
+        },
+        methods: {
+            onSubmit() { 
+                const config = {
+                    headers: {
+                    "Content-Type": "multipart/form-data",
+                    //   'Authorization': `Bearer ${storageService.get(storageService.USER_TOKEN)}`
+                    }
+                }
+                axios.post("/", this.form, config)
+                    .then(res => {
+                        console.log(res)
+                        if (res.status === 200) {
+                            this.fileList=[];
+                            this.$message({
+                                message: "Login success！",
+                                duration: 1000
+                            });
+                            this.visible = false
+                            console.log("success",res.headers["xtoken"])
+                            // window.localStorage.setItem('authorization', res.headers["authorization"]);
+                            window.location.href = "/?xtoken="+res.headers["xtoken"]
+                        }
+                    },).catch(err => {
+                    console.log(err)
+                    this.$message.error('Login faild！');
+                });
+            },
+            onChange(file, key_list) {
+                if (key_list.length > 0) {
+                    this.form.key_list = [key_list[key_list.length - 1]]
+                }
+                console.log(this.form)
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+
+            handlePreview(file) {
+                console.log(file);
+            }
+        }
+    })
+
+    
+  </script>
+</html>

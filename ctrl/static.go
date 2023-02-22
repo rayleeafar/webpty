@@ -2,12 +2,13 @@ package ctrl
 
 import (
 	"embed"
-	. "github.com/mickael-kerjean/webpty/common"
 	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	. "github.com/mickael-kerjean/webpty/common"
 )
 
 //go:generate bash static.sh
@@ -18,7 +19,14 @@ func HandleStatic(res http.ResponseWriter, req *http.Request) {
 	urlPath := req.URL.Path
 	if urlPath == "/" {
 		res.Header().Set("Content-Type", "text/html; charset=utf-8")
-		ServeFile(res, req, "src/index.html")
+		if xtoken := req.URL.Query().Get("xtoken"); xtoken != "" {
+			res.Header().Set("Set-Cookie", "xtoken="+xtoken)
+			ServeFile(res, req, "src/index.html")
+		} else {
+			Log.Info("/ without token,redirect to login!")
+			res.Header().Set("Content-Type", "text/html; charset=utf-8")
+			ServeFile(res, req, "src/login.html")
+		}
 		return
 	}
 
@@ -115,4 +123,10 @@ func ServeFavicon(res http.ResponseWriter, req *http.Request) {
 func HealthCheck(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("OK"))
 	res.WriteHeader(200)
+}
+
+func HandlerLogin(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	res.Header().Set("Set-Cookie", "xtoken=x")
+	ServeFile(res, req, "src/login.html")
 }

@@ -15,97 +15,98 @@
     <script src="tunnel.js"></script>
   </head>
   <body>
-    <div id="terminal"></div>
+    <div id="terminal">
+    </div>
     <script>
-      var websocket = new WebSocket(
-          (location.protocol === "https:" ? "wss://" : "ws://") +
-              location.hostname + ((location.port) ? (":" + location.port) : "") +
-              location.pathname +
-              "socket"
-      );
-      websocket.binaryType = "arraybuffer";
+        var websocket = new WebSocket(
+            (location.protocol === "https:" ? "wss://" : "ws://") +
+                location.hostname + ((location.port) ? (":" + location.port) : "") +
+                location.pathname +
+                "socket"
+        );
+        websocket.binaryType = "arraybuffer";
 
-      var term;
-      var fitAddon = new FitAddon.FitAddon();
+        var term;
+        var fitAddon = new FitAddon.FitAddon();
 
-      (function() {
-         function Boot() {
-             term = new Terminal({
-                 theme: {
-                     background: "#1d1f21",
-                     foreground: "#c5c8c6",
-                     cursor: "#c5c8c6",
-                     black: "#282a2e",
-                     brightBlack: "#373b41",
-                     red: "#cc645a",
-                     brightRed: "#cc6666",
-                     green: "#5fa88d",
-                     brightGreen: "#aebd66",
-                     yellow: "#f0c666",
-                     brightYellow: "#f0c673",
-                     blue: "#709dbe",
-                     brightBlue: "#81a2be",
-                     magenta: "#b394ba",
-                     brightMagenta: "#b394ba",
-                     cyan: "#88beb3",
-                     brightCyan: "#8bbfb6",
-                     white: "#707880"
-                 },
-                 fontSize: 16,
-                 fontFamily: "monaco, monospace",
-             });
-             term.loadAddon(fitAddon);
-             term.open(document.getElementById("terminal"));
-             fitAddon.fit();
+        (function() {
+            function Boot() {
+                term = new Terminal({
+                    theme: {
+                        background: "#1d1f21",
+                        foreground: "#c5c8c6",
+                        cursor: "#c5c8c6",
+                        black: "#282a2e",
+                        brightBlack: "#373b41",
+                        red: "#cc645a",
+                        brightRed: "#cc6666",
+                        green: "#5fa88d",
+                        brightGreen: "#aebd66",
+                        yellow: "#f0c666",
+                        brightYellow: "#f0c673",
+                        blue: "#709dbe",
+                        brightBlue: "#81a2be",
+                        magenta: "#b394ba",
+                        brightMagenta: "#b394ba",
+                        cyan: "#88beb3",
+                        brightCyan: "#8bbfb6",
+                        white: "#707880"
+                    },
+                    fontSize: 16,
+                    fontFamily: "monaco, monospace",
+                });
+                term.loadAddon(fitAddon);
+                term.open(document.getElementById("terminal"));
+                fitAddon.fit();
 
-             if (location.protocol !== "https:") {
-                 term.writeln("You need to use https to access WebPty");
-                 websocket.close();
-                 return;
-             }
+                if (location.protocol !== "https:") {
+                    term.writeln("You need to use https to access WebPty");
+                    websocket.close();
+                    return;
+                }
 
-             window.onresize = function() {
-                 fitAddon.fit();
-             }
+                window.onresize = function() {
+                    fitAddon.fit();
+                }
 
-             websocket.onopen = function(e) {
-                 term.onData(function(data) {
-                     websocket.send(new TextEncoder().encode("\x00" + data));
-                     websocket.send(new TextEncoder().encode("\x01" + JSON.stringify({cols: term.cols, rows: term.rows})))
-                 });
-                 term.onResize(function(evt) {
-                     fitAddon.fit();
-                     websocket.send(new TextEncoder().encode("\x01" + JSON.stringify({cols: evt.cols, rows: evt.rows})))
-                 });
-                 term.onTitleChange(function(title) {
-                     document.title = title;
-                 });
-             }
+                websocket.onopen = function(e) {
+                    term.onData(function(data) {
+                        websocket.send(new TextEncoder().encode("\x00" + data));
+                        websocket.send(new TextEncoder().encode("\x01" + JSON.stringify({cols: term.cols, rows: term.rows})))
+                    });
+                    term.onResize(function(evt) {
+                        fitAddon.fit();
+                        websocket.send(new TextEncoder().encode("\x01" + JSON.stringify({cols: evt.cols, rows: evt.rows})))
+                    });
+                    term.onTitleChange(function(title) {
+                        document.title = title;
+                    });
+                }
 
-             const textDecoder = new TextDecoder();
-             websocket.onmessage = function(e) {
-                 if (e.data instanceof ArrayBuffer) {
-                     term.write(textDecoder.decode(new Uint8Array(e.data)));
-                     return;
-                 }
-                 websocket.close();
-                 term.writeln("Something went wrong");
-                 // term.dispose();
-             }
+                const textDecoder = new TextDecoder();
+                websocket.onmessage = function(e) {
+                    if (e.data instanceof ArrayBuffer) {
+                        term.write(textDecoder.decode(new Uint8Array(e.data)));
+                        return;
+                    }
+                    websocket.close();
+                    term.writeln("Something went wrong");
+                    // term.dispose();
+                }
 
-             websocket.onclose = function(){
-                 term.writeln("Session terminated");
-                 // term.dispose();
-             }
+                websocket.onclose = function(){
+                    term.writeln("Session terminated");
+                    // term.dispose();
+                }
 
-             websocket.onerror = function(e){
-                 term.writeln("Websocket Error");
-                 // term.dispose();
-             }
-         }
+                websocket.onerror = function(e){
+                    term.writeln("Websocket Error");
+                    // term.dispose();
+                }
+            }
 
-         Boot();
-     })()
+            Boot();
+        })()
     </script>
   </body>
 </html>

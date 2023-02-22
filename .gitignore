@@ -1,3 +1,6 @@
 cert
 dist
+bin
+vendor
+__debug_bin
 *.gz
