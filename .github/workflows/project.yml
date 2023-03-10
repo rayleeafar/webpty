@@ -1,9 +1,13 @@
 name: Build / Test / Release
 
+
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
 jobs:
 
   build:
