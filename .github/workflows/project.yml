@@ -45,7 +45,7 @@ jobs:
       with:
         files: 'dist/*.bin'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-      
+        release-tag: ${{  github.ref }}
       
         # upload new assets
         # curl --data-binary @dist/webpty_linux_amd64.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_amd64.bin"
