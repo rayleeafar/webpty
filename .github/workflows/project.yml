@@ -9,22 +9,13 @@ permissions:
   contents: write
   actions: write
 jobs:
-
   build:
     runs-on: ubuntu-latest
     environment: cicd
     
     steps:
     - uses: actions/checkout@v3
-    - name: create release
-      uses: actions/create-release@v1
-      id: create_release
-      env:
-          GITHUB_TOKEN: ${{ github.token }}
-      with:
-        draft: false
-        prerelease: false
-        tag_name: ${{ github.ref }}
+    
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -38,6 +29,21 @@ jobs:
     #- name: Test
     #  run: go test ./...
     
+    - name: version
+        run: echo "::set-output name=version::$(./dist/webpty_linux_amd64.bin --version)"
+        id: version
+        
+    - name: create release
+      uses: actions/create-release@v1
+      id: create_release
+      env:
+          GITHUB_TOKEN: ${{ github.token }}
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{ steps.version.outputs.version }}
+        tag_name: ${{ github.ref }}
+        
     - name: upload linux artifact
       uses: AButler/upload-release-assets@v2.0
       env:
