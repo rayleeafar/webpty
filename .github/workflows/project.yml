@@ -25,13 +25,14 @@ jobs:
     #- name: Test
     #  run: go test ./...
     
-    - name: Upload a Build Artifact
-      uses: AButler/upload-release-assets@v2.0
+    - name: upload linux artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       with:
-        files: 'dist/*.bin'
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        release-tag: v0.0.1
-
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/webpty_linux_amd64.bin
+        asset_name: webpty_linux_amd64.bin
     
         # upload new assets
         # curl --data-binary @dist/webpty_linux_amd64.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_amd64.bin"
