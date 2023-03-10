@@ -24,18 +24,15 @@ jobs:
 
     #- name: Test
     #  run: go test ./...
-
+    
     - name: Upload Release Assets
+      uses: xresloader/upload-to-github-release@v1
       env:
-        OWNER: rayleeafar
-        REPO: webpty
-        RELEASE_ID: 79898913
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # remove all assets
-        curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets" > assets.json
-        cat assets.json | sed -n 's|^    "id": \([0-9]*\),|\1|p' > existing_assets_ids.txt > asset_ids.txt
-        cat asset_ids.txt | xargs -I ASSET_ID curl -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/releases/assets/ASSET_ID"
+      with:
+        file: "@dist/*.bin"
+        tags: true
+        draft: true
         # upload new assets
-        curl --data-binary @dist/webpty_linux_amd64.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_amd64.bin"
-        curl --data-binary @dist/webpty_linux_arm.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_arm.bin"
+        # curl --data-binary @dist/webpty_linux_amd64.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_amd64.bin"
+        # curl --data-binary @dist/webpty_linux_arm.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_arm.bin"
