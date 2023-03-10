@@ -25,14 +25,15 @@ jobs:
     #- name: Test
     #  run: go test ./...
     
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.2
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/webpty*
-        tag: ${{ github.ref }}
-        overwrite: true
-        body: "Webpty release"
+        # Artifact name
+        name: webpty
+        path: dist/*.bin
+        body: "webpty release"
+
+    
         # upload new assets
         # curl --data-binary @dist/webpty_linux_amd64.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_amd64.bin"
         # curl --data-binary @dist/webpty_linux_arm.bin -H "Content-Type: application/octet-stream" -H "Authorization: Bearer $GITHUB_TOKEN" "https://uploads.github.com/repos/$OWNER/$REPO/releases/$RELEASE_ID/assets?name=webpty_linux_arm.bin"
