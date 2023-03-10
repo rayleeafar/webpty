@@ -26,12 +26,11 @@ jobs:
     #  run: go test ./...
     
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: AButler/upload-release-assets@v2.0
       with:
-        # Artifact name
-        name: webpty
-        path: dist/*.bin
-        body: "webpty release"
+        files: 'dist/*.bin'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: v0.0.1
 
     
         # upload new assets
